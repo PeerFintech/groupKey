@@ -56,15 +56,6 @@ public class SysParametersDAO {
         syspara.setP_pub(P.mulZn(SK));
         System.out.println("主公钥P_pub："+syspara.getP_pub());
         return syspara;
-        /*测试哈希函数
-        Element t1 = syspara.hashFromStringToZp("111222333",pairing);
-        System.out.println("t1="+t1);
-        Element t2 = syspara.hashFromStringToZp("111222333",pairing);
-        System.out.println("t2="+t2);
-
-         */
-
-
     }
 
     public void checkSymmetric(Pairing pairing) {
@@ -72,5 +63,4 @@ public class SysParametersDAO {
             throw new RuntimeException("密钥不对称!");
         }
     }
-
 }

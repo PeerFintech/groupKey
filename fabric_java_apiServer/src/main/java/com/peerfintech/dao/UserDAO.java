@@ -5,9 +5,11 @@ import com.peerfintech.entity.SysParameters;
 import com.peerfintech.entity.User;
 import it.unisa.dia.gas.jpbc.Element;
 import it.unisa.dia.gas.jpbc.Pairing;
+import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -45,7 +47,7 @@ public class UserDAO {
     public User generateOneUserKey(User u, SysParameters syspara) {
 
         System.out.println("generateOneUserKey");
-        byte[] randomBytes = chooseUserIdentity();//2021-1-5 xysong 后续用户的ID值可以通过区块链网络提供
+        byte[] randomBytes = chooseUserIdentity();
         u.setId(randomBytes);//设置该用户的ID值
         Element upk_1 = syspara.hashFromBytesToG1(randomBytes, syspara.getPairing());
         u.setUpk_1(upk_1);//设置部分公钥
@@ -55,9 +57,7 @@ public class UserDAO {
 
 
         //计算另一部分私钥与公钥
-        /*Random r=new Random();
-        BigInteger x_i= new BigInteger(160, r);//大整数作为私钥sk */
-        Element x_i = syspara.getZ_q().newRandomElement().getImmutable();// 2020-12-29 revised
+        Element x_i = syspara.getZ_q().newRandomElement().getImmutable();
         u.setUsk_2(x_i);
         Element upk_2 = syspara.getP().mulZn(x_i).getImmutable();
         u.setUpk_2(upk_2);
@@ -132,7 +132,6 @@ public class UserDAO {
         System.out.println("message_i:" + message_i.size());
 
         return message_i;
-
     }
 
 
@@ -144,7 +143,6 @@ public class UserDAO {
      */
     public Element[][] keyGenerationMatrix(int n, SysParameters syspara, byte[] theta, ArrayList<User> userlist) {
         Element[][] metrix = new Element[n][n + 1];
-        //ArrayList<User> userlist  = generateUserListKey(n,syspara);
         System.out.println("UserdDAO: userlist:" + userlist.size());
         for (int i = 0; i < n; i++) {
             User u = userlist.get(i);//得到列表中的一位用户
@@ -153,7 +151,6 @@ public class UserDAO {
             metrix[i][0] = message.get(0).getImmutable();
             message.remove(0);
 
-            //System.out.println("1111message:"+message.size());
             for (int j = 1; j <= n; j++) {
                 if (j != i + 1) {
                     metrix[i][j] = message.get(0).getImmutable();
@@ -205,9 +202,6 @@ public class UserDAO {
             HP_sum = HP_sum.add(HP_i.getImmutable());
             R_sum = R_sum.add(R_i.getImmutable());
         }
-        /*System.out.println("Q_sum："+Q_sum);
-        System.out.println("P_sum:"+P_sum);
-        System.out.println("HP_sum:"+HP_sum); */
 
 
         for (int j = 0; j < n; j++) {
@@ -217,7 +211,6 @@ public class UserDAO {
                 }
             }
         }
-        //S_sum = S_sum.add(u.getS());
 
         Element e_left = pairing.pairing(S_sum, syspara.getP());
         Element e1_right = pairing.pairing((Q_sum.add(HP_sum)), syspara.getP_pub());
@@ -238,33 +231,17 @@ public class UserDAO {
 
     }
 
-  /*  *//*
-    函数：encryptMessage
-    作用：加密消息
-    输入：
-    输出：
-     *//*
-    public Ciphertext encryptMessage(SysParameters syspara, User u, byte[] m) {
+
+
+    public Ciphertext encryptMessage(Element C1, Element C2, Element t_omega, byte[] m) throws IOException {
         Ciphertext c = new Ciphertext();
-        //选择随机数k
-        Element k = syspara.getZ_q().newRandomElement().getImmutable();
-        Element C1 = syspara.getP().mulZn(k).getImmutable();
-        System.out.println("C1:" + C1);
-        Element C2 = u.getGroupEncryptionKey_R().mulZn(k).getImmutable();
-        Element t_omega = u.getGroupEncryptionKey_O().powZn(k).getImmutable();
-        System.out.println("t_omega:" + t_omega);
-        byte[] tmp_h5 = sha256(t_omega.toBytes());
-        for (int i = 0; i < tmp_h5.length; i++) {
-            System.out.print("    " + tmp_h5[i] + "   ");
-        }
-        System.out.println();
 
-        System.out.println("message的内容：");
-        for (int j = 0; j < m.length; j++) {
-            System.out.print("    " + m[j] + "   ");
-        }
-        System.out.println();
+        byte[] slice_t_omega_1 = subByte(t_omega.toBytes(), 0, 64);
+        byte[] slice_t_omega_2 = subByte(t_omega.toBytes(), 64, 64);
+        byte[] tmp_h5 = byteMerger(sha512(slice_t_omega_1), sha512(slice_t_omega_2));
 
+        // 比较message长度
+        // 如果是针对超过128bit的加密信息
         byte[] C3;
         if (m.length >= 128) {
             C3 = XORForLong(tmp_h5, m);
@@ -272,178 +249,34 @@ public class UserDAO {
             C3 = XORForShort(tmp_h5, m);
         }
 
-        // byte[] C3 = XOR(m,tmp_h5);
-        //.g1_element.getImmutable().toCanonicalRepresentation();;
-
-        System.out.println("C3的内容：");
-        for (int j = 0; j < C3.length; j++) {
-            System.out.print("    " + C3[j] + "   ");
-        }
-        System.out.println();
-
-
-        c.setC1(C1);
-
-        c.setC2(C2);
-        System.out.println("C2:" + c.getC2());
-        c.setC3(C3);
-        //System.out.println("C3:"+c.getC3());
-        return c;
-    }
-
-    *//*
-    函数：decryptMessage
-    作用：解密消息
-    输入：
-    输出：
-     *//*
-    public byte[] decryptMessage(SysParameters syspara, User u, Ciphertext C) {
-        Element C1 = C.getC1();
-        Element C2 = C.getC2();
-        //System.out.println("C1:"+C1);
-        //System.out.println("C2:"+C2);
-        Pairing pairing = syspara.getPairing();
-        Element t1 = pairing.pairing(u.getGroupDecryptionKey(), C1).getImmutable();
-        Element t2 = pairing.pairing(u.getT().invert().duplicate(), C2).getImmutable();
-        Element t_mul = t1.mul(t2);
-        System.out.println("t_omega/t_mul:" + t_mul);
-        byte[] tmp = sha256(t_mul.toBytes());
-        System.out.println("tmp的内容：");
-
-
-        for (int i = 0; i < tmp.length; i++) {
-            System.out.print("    " + tmp[i] + "   ");
-        }
-        System.out.println();
-
-        System.out.println("C3的内容：");
-
-        for (int j = 0; j < C.getC3().length; j++) {
-            System.out.print("    " + C.getC3()[j] + "   ");
-        }
-        System.out.println();
-
-        byte[] message;
-        if (C.getC3().length >= 128) {
-            message = XORForLong(C.getC3(), tmp);
-        } else {
-            message = XORForShort(C.getC3(), tmp);
-        }
-        //byte[] message = XOR(C.getC3(),tmp);
-
-        System.out.println("message的内容：");
-        for (int j = 0; j < message.length; j++) {
-            System.out.print("    " + message[j] + "   ");
-        }
-        System.out.println();
-
-        return message;
-    }
-
-
-    //辅助函数
-    //异或运算
-    *//*public byte[] XOR(byte[] a, byte[] b)
-    {
-        byte[] result = new byte[Math.min(a.length, b.length)];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (byte) (((int) a[i]) ^ ((int) b[i]));
-        }
-        return result;
-    }*//*
-    public byte[] XORForLong(byte[] a, byte[] b) {
-        byte longbytes[], shortbytes[];
-        if (a.length >= b.length) {
-            longbytes = a;
-            shortbytes = b;
-        } else {
-            longbytes = b;
-            shortbytes = a;
-        }
-        byte xorstr[] = new byte[longbytes.length];
-        int len = shortbytes.length;
-        //让短的byte[]循环
-        for (int i = 0; i    < longbytes.length; i++) {
-            xorstr[i] = (byte) (shortbytes[i % len] ^ longbytes[i]);
-        }
-
-        return xorstr;
-    }
-
-
-    public byte[] XORForShort(byte[] a, byte[] b) {
-        byte[] result = new byte[Math.min(a.length, b.length)];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = (byte) (((int) a[i]) ^ ((int) b[i]));
-        }
-        return result;
-    }
-*/
-
-
-    public Ciphertext encryptMessage(SysParameters syspara, User u, byte[] m){
-        Ciphertext c = new Ciphertext();
-        //选择随机数k
-        Element k = syspara.getZ_q().newRandomElement().getImmutable();
-        Element C1 = syspara.getP().mulZn(k).getImmutable();
-        Element C2 = u.getGroupEncryptionKey_R().mulZn(k).getImmutable();
-        Element t_omega = u.getGroupEncryptionKey_O().powZn(k).getImmutable();
-        System.out.println("C1:"+C1);
-
-        //System.out.println("长度："+t_omega.toBytes().length);
-
-
-
-
-        byte[] slice_t_omega_1 = subByte(t_omega.toBytes(),0,64);
-        byte[] slice_t_omega_2 = subByte(t_omega.toBytes(),64,64);
-        byte[] tmp_h5 = byteMerger(sha512(slice_t_omega_1),sha512(slice_t_omega_2));
-
-        // 比较message长度
-        // 如果是针对超过128bit的加密信息
-        byte[] C3;
-        if(m.length>=128){
-            C3 = XORForLong(tmp_h5,m);
-        } else {
-            C3 = XORForShort(tmp_h5,m);
-        }
-
-
-
         c.setC1(C1);
         c.setC2(C2);
         c.setC3(C3);
         return c;
     }
 
-    public byte[] decryptMessage(SysParameters syspara, User u, Ciphertext C)
-    {
-        Element C1= C.getC1();
-        Element C2= C.getC2();
-
-        Pairing pairing = syspara.getPairing();
-        Element t1 = pairing.pairing(u.getGroupDecryptionKey(),C1).getImmutable();
-        Element t2 = pairing.pairing(u.getT().invert().duplicate(),C2).getImmutable();
+    public byte[] decryptMessage(Element C1, Element C2,Element T,Element SKey, byte[] C3) {
+        Pairing pairing = PairingFactory.getPairing("a.properties");
+        Element t1 = pairing.pairing(SKey, C1).getImmutable();
+        Element t2 = pairing.pairing(T, C2).getImmutable();
         Element t_mul = t1.mul(t2);
 
-        byte[] slice_t_mul_1 = subByte(t_mul.toBytes(),0,64);
-        byte[] slice_t_mul_2 = subByte(t_mul.toBytes(),64,64);
+        byte[] slice_t_mul_1 = subByte(t_mul.toBytes(), 0, 64);
+        byte[] slice_t_mul_2 = subByte(t_mul.toBytes(), 64, 64);
 
-        byte[] tmp = byteMerger(sha512(slice_t_mul_1),sha512(slice_t_mul_2));
+        byte[] tmp = byteMerger(sha512(slice_t_mul_1), sha512(slice_t_mul_2));
 
         byte[] message;
-        if(C.getC3().length>=128){
-            message = XORForLong(C.getC3(),tmp);
+        if (C3.length >= 128) {
+            message = XORForLong(C3, tmp);
         } else {
-            message = XORForShort(C.getC3(),tmp);
+            message = XORForShort(C3, tmp);
         }
-
-
         return message;
     }
 
 
-    public byte[] subByte(byte[] b,int off,int length){
+    public byte[] subByte(byte[] b, int off, int length) {
         byte[] b1 = new byte[length];
         System.arraycopy(b, off, b1, 0, length);
         return b1;
@@ -460,47 +293,39 @@ public class UserDAO {
     }
 
 
-    public byte[] byteMerger(byte[] byte_1, byte[] byte_2){
-        byte[] byte_3 = new byte[byte_1.length+byte_2.length];
+    public byte[] byteMerger(byte[] byte_1, byte[] byte_2) {
+        byte[] byte_3 = new byte[byte_1.length + byte_2.length];
         System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);
         System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);
         return byte_3;
     }
 
-    public byte[] XORForLong(byte[] a, byte[] b)
-    {
-    /*byte[] result = new byte[Math.min(a.length, b.length)];
-    for (int i = 0; i < result.length; i++) {
-        result[i] = (byte) (((int) a[i]) ^ ((int) b[i]));
-    }
-    return result;*/
-        byte longbytes[],shortbytes[];
-        if(a.length>=b.length){
+    public byte[] XORForLong(byte[] a, byte[] b) {
+        byte longbytes[], shortbytes[];
+        if (a.length >= b.length) {
             longbytes = a;
             shortbytes = b;
-        }else{
+        } else {
             longbytes = b;
             shortbytes = a;
         }
         byte xorstr[] = new byte[longbytes.length];
         int len = shortbytes.length;
         //让短的byte[]循环
-        for(int i = 0;i<longbytes.length;i++){
-            xorstr[i] = (byte)(shortbytes[i%len]^longbytes[i]);
+        for (int i = 0; i < longbytes.length; i++) {
+            xorstr[i] = (byte) (shortbytes[i % len] ^ longbytes[i]);
         }
 
         return xorstr;
     }
 
-    public byte[] XORForShort(byte[] a, byte[] b){
+    public byte[] XORForShort(byte[] a, byte[] b) {
         byte[] result = new byte[Math.min(a.length, b.length)];
         for (int i = 0; i < result.length; i++) {
             result[i] = (byte) (((int) a[i]) ^ ((int) b[i]));
         }
         return result;
     }
-
-
 
 
     //byte数组进行sha 256
@@ -513,6 +338,4 @@ public class UserDAO {
         dgst.doFinal(hash, 0);
         return hash;
     }
-
-
 }

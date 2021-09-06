@@ -56,6 +56,4 @@ public class Ciphertext {
             return null;
         }
     }
-
-
 }

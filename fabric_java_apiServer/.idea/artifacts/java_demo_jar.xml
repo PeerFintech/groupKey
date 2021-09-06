@@ -1,0 +1,58 @@
+<component name="ArtifactManager">
+  <artifact name="java-demo:jar">
+    <output-path>$PROJECT_DIR$/../../group</output-path>
+    <root id="root">
+      <element id="archive" name="java-demo.jar">
+        <element id="module-output" name="java-demo" />
+      </element>
+      <element id="library" level="project" name="Maven: org.slf4j:jul-to-slf4j:1.7.25" />
+      <element id="library" level="project" name="Maven: org.jboss.logging:jboss-logging:3.3.1.Final" />
+      <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.32" />
+      <element id="library" level="project" name="Maven: com.fasterxml:classmate:1.3.3" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jna-3.2.5.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-mm-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-api-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-pbc-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-plaf-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/bcprov-jdk16-1.46.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-crypto-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jpbc-benchmark-2.0.0.jar" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-logging:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-web:4.3.9.RELEASE" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jna-3.2.5.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-mm-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-api-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-pbc-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-plaf-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/bcprov-jdk16-1.46.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-crypto-2.0.0.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../group_key_test/lib/jpbc-benchmark-2.0.0.jar" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-context:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:8.5.15" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-autoconfigure:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.1.11" />
+      <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:8.5.15" />
+      <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.1.11" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.8" />
+      <element id="library" level="project" name="Maven: org.yaml:snakeyaml:1.17" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.25" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-core:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-websocket:8.5.15" />
+      <element id="library" level="project" name="Maven: com.peerfintech:sdk:3.0" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: org.slf4j:log4j-over-slf4j:1.7.25" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-tomcat:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: javax.validation:validation-api:1.1.0.Final" />
+      <element id="library" level="project" name="Maven: org.hibernate:hibernate-validator:5.3.5.Final" />
+      <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-web:1.5.4.RELEASE" />
+      <element id="library" level="project" name="Maven: org.springframework:spring-beans:4.3.9.RELEASE" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.8" />
+    </root>
+  </artifact>
+</component>

@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="fabric_java_apiServer" />
+        <module name="java-demo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="fabric_java_apiServer" target="1.8" />
+      <module name="java-demo" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
